@@ -20,7 +20,7 @@ const handleSubmitForm = useCallback( (e)=>{
 
 const handleJoinRoom = useCallback( (data)=>{
   const {email,room} = data;
-  navigate(`/room/${room}`)
+  navigate(`/room/:${room}`)
 },[]);
 
 useEffect( ()=>{
