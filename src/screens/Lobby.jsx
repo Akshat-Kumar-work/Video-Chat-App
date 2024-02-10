@@ -12,8 +12,10 @@ const socket = useSocket();
 
 const navigate = useNavigate();
 
+//function to handle submit form
 const handleSubmitForm = useCallback( (e)=>{
   e.preventDefault();
+  //emiting room join event
   socket.emit('room:join',{email , room});
 
 },[email,room,socket]);
@@ -44,7 +46,7 @@ useEffect( ()=>{
             <input type='text' id='room' value={room} 
                 onChange={e=>setRoom(e.target.value)} />
 
-            <button>Join</button>
+            <button type='submit' >Join</button>
 
         </form>
     </div>

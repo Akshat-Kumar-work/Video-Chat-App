@@ -5,6 +5,7 @@ class PeerService{
 
     constructor(){
         if(!this.peer){
+            //rtcpeerconnection provide the method to connect local computer to remote peer
             this.peer = new RTCPeerConnection({
                 iceServers:[{
                     urls:[

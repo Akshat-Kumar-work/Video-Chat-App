@@ -13,44 +13,61 @@ const Room = () => {
   const [remoteStream , setRemoteStream] = useState(null);
 
 
+  // function to handle new remote  user joined in room
   const handleUserJoined = useCallback( ({email,id})=>{
     console.log("email",email);
     setRemoteSocketId(id)
-  },[]);
+  },[remoteSocketId]);
 
+
+
+  //handle call coming from peer
   const handleIncomingCall = useCallback( async({from,offer})=>{
 
+    //set remote socket id of user from which call is coming
     setRemoteSocketId(from);
 
-       //getting current user media video and audio
+       //getting our current user media video and audio
        const stream  = await navigator.mediaDevices.getUserMedia({
         audio:true,
         video:true
       });
 
+      //setting current user steam
       setMyStream(stream);
 
     console.log("incoming call ",from ,offer);
+
+    //creating answer for the offer given by called user
     const ans = await peer.getAnswer(offer);
+
+    //emit the call:accepted event 
     socket.emit('call:accepted',{to:from,ans})
   } ,[socket,remoteSocketId]);
 
+
+
+  //send our stream to another peeer
   const sendStream = useCallback( ()=>{
     for(const track of myStream.getTracks()){
       peer.peer.addTrack(track,myStream)
     }
   },[myStream])
 
+
+  //function to handle call accepted event
   const handleCallAccepted = useCallback(async({from,ans})=>{
     peer.setLocalDescription(ans);
     console.log("call accepted");
    sendStream()
   },[sendStream])
 
+
+
   const handleNegotiationNeeded = useCallback(async()=>{
     const offer = await peer.getOffer();
     socket.emit('peer:nego:needed',{offer,to:remoteSocketId})
-  },[]) 
+  },[socket]) 
 
   const handleNegoNeedIncoming = useCallback( async ({from , offer})=>{
     const ans =  await peer.getAnswer(offer);
@@ -77,6 +94,8 @@ const Room = () => {
     })
   },[remoteStream])
   
+
+  //use Effect for socket events
   useEffect( ()=>{
     socket.on('user:joined',handleUserJoined)
 
@@ -98,6 +117,8 @@ const Room = () => {
     }
   },[socket,handleUserJoined,handleIncomingCall ,handleCallAccepted,handleNegoNeedFinal,handleNegoNeedIncoming]);
 
+
+  //function to call user
   const handleCallUser = useCallback( async ()=>{
 
     //getting current user media video and audio
@@ -108,7 +129,7 @@ const Room = () => {
 
     //creating offer
     const offer = await peer.getOffer();
-    //sending offer to remotesocketId using socket.io
+    //emit 'user:call' event to send offer to remotesocketId using socket.io
     socket.emit("user:call",{to:remoteSocketId ,offer});
     setMyStream(stream);
 
@@ -119,9 +140,9 @@ const Room = () => {
       <h1>Room Page</h1>
       <h4>{remoteSocketId ? "Connected" : "No one in Room"}</h4>
 
-      {
+      {/* {
         myStream && <button onClick={sendStream}>Send Stream</button>
-      }
+      } */}
 
       {
         remoteSocketId &&  <button onClick={handleCallUser} >Call</button>

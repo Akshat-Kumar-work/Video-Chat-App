@@ -15,23 +15,33 @@ const socketIdToEmailMap = new Map();
 
 io.on('connection',socket=>{
     console.log("socket connected ",socket.id);
+    //on room:join event 
     socket.on('room:join',data=> {
+
+        //fetch data of user who joined the room
         const {email,room} = data
         
         emailToSocketIdMap.set(email,socket.id);
         socketIdToEmailMap.set(socket.id,email);
 
-        io.to(room).emit('user:joined',{email,id:socket.id});
-
+        // current user ko join krwadia room
         socket.join(room);
 
+        //after joining the room by current user , send room:join event emittion to current socket/user
         io.to(socket.id).emit('room:join',data);
 
+        //emit user:joined event only  in  provided room, in which email and id is passed of joined user
+        io.to(room).emit('user:joined',{email,id:socket.id});
+
+        //on user:call event
         socket.on("user:call",({to,offer})=>{
+            //emit 'incoming:call' event to the user which our current user want to call
             io.to(to).emit('incoming:call',{from:socket.id,offer})
         })
 
+        //on 'call:accepted' event
         socket.on('call:accepted',({to,ans})=>{
+            //emit the 'call:accepted event for the user which send offer earlier and share offer answer to it
             io.to(to).emit('call:accepted',{from:socket.id,ans});
         })
 
