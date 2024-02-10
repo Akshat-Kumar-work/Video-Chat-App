@@ -17,7 +17,7 @@ const Room = () => {
   const handleUserJoined = useCallback( ({email,id})=>{
     console.log("email",email);
     setRemoteSocketId(id)
-  },[remoteSocketId]);
+  },[]);
 
 
 
@@ -43,7 +43,7 @@ const Room = () => {
 
     //emit the call:accepted event 
     socket.emit('call:accepted',{to:from,ans})
-  } ,[socket,remoteSocketId]);
+  } ,[socket]);
 
 
 
@@ -67,7 +67,7 @@ const Room = () => {
   const handleNegotiationNeeded = useCallback(async()=>{
     const offer = await peer.getOffer();
     socket.emit('peer:nego:needed',{offer,to:remoteSocketId})
-  },[socket]) 
+  },[socket,remoteSocketId]) 
 
   const handleNegoNeedIncoming = useCallback( async ({from , offer})=>{
     const ans =  await peer.getAnswer(offer);
@@ -76,7 +76,7 @@ const Room = () => {
 
   const handleNegoNeedFinal = useCallback(async ({from,ans})=>{
    await peer.setLocalDescription(ans)
-  },[socket])
+  },[])
   
 
   useEffect( ()=>{
@@ -92,7 +92,7 @@ const Room = () => {
       //stream is an array, we get 0th element of stream because there are many streams
       setRemoteStream(remoteStream[0]);
     })
-  },[remoteStream])
+  },[])
   
 
   //use Effect for socket events
@@ -140,9 +140,9 @@ const Room = () => {
       <h1>Room Page</h1>
       <h4>{remoteSocketId ? "Connected" : "No one in Room"}</h4>
 
-      {/* {
+      {
         myStream && <button onClick={sendStream}>Send Stream</button>
-      } */}
+      }
 
       {
         remoteSocketId &&  <button onClick={handleCallUser} >Call</button>

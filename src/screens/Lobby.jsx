@@ -20,6 +20,7 @@ const handleSubmitForm = useCallback( (e)=>{
 
 },[email,room,socket]);
 
+//after joining the room the user will navigate to the room
 const handleJoinRoom = useCallback( (data)=>{
   const {email,room} = data;
   navigate(`/room/:${room}`)
@@ -27,6 +28,7 @@ const handleJoinRoom = useCallback( (data)=>{
 
 useEffect( ()=>{
   socket.on('room:join',handleJoinRoom);
+  console.log("inside handle join room in lobby")
   return ()=>{
     socket.off('room:join',handleJoinRoom);
   }
@@ -46,7 +48,7 @@ useEffect( ()=>{
             <input type='text' id='room' value={room} 
                 onChange={e=>setRoom(e.target.value)} />
 
-            <button type='submit' >Join</button>
+            <button  >Join</button>
 
         </form>
     </div>
