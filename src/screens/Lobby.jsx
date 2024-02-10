@@ -27,10 +27,10 @@ const handleJoinRoom = useCallback( (data)=>{
 },[]);
 
 useEffect( ()=>{
-  socket.on('room:join',handleJoinRoom);
+  socket.on('room:joined',handleJoinRoom);
   console.log("inside handle join room in lobby")
   return ()=>{
-    socket.off('room:join',handleJoinRoom);
+    socket.off('room:joined',handleJoinRoom);
   }
 },[socket]);
 

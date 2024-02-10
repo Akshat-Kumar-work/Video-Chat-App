@@ -19,8 +19,10 @@ class PeerService{
 
     async getAnswer (offer){
         if(this.peer){
+            //setting remote description sdp
             await this.peer.setRemoteDescription(offer)
             const ans = await this.peer.createAnswer()
+            //setting local description => sdp
             await this.peer.setLocalDescription(new RTCSessionDescription(ans));
             return ans;
         }
@@ -30,6 +32,7 @@ class PeerService{
     async getOffer(){
         if(this.peer){
             const offer = await this.peer.createOffer();
+            //setting local description => sdp
             await this.peer.setLocalDescription(new RTCSessionDescription(offer))
             return offer;
         }
@@ -37,6 +40,7 @@ class PeerService{
 
     async setLocalDescription(ans){
         if(this.peer){
+            //setting remote description =>sdp
             await this.peer.setRemoteDescription(new RTCSessionDescription(ans));
         }
     }

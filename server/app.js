@@ -33,7 +33,7 @@ io.on('connection',socket=>{
         socket.join(room);
 
         //after joining the room by current user , send room:join event emittion to current socket/user
-        io.to(socket.id).emit('room:join',data);
+        io.to(socket.id).emit('room:joined',data);
 
         
         //on user:call event

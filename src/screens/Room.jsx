@@ -54,6 +54,7 @@ const Room = () => {
   const sendStream = useCallback( ()=>{
     for(const track of myStream.getTracks()){
       peer.peer.addTrack(track,myStream)
+      console.log(track)
     }
   },[myStream])
 
@@ -123,7 +124,7 @@ const Room = () => {
 
 
 
-  //function to call user
+  //function to call peer
   const handleCallUser = useCallback( async ()=>{
 
     //getting current user media video and audio
@@ -131,6 +132,8 @@ const Room = () => {
       audio:true,
       video:true
     });
+
+    console.log(stream)
 
     //creating offer
     const offer = await peer.getOffer();
