@@ -13,6 +13,9 @@ const Room = () => {
   const [remoteStream , setRemoteStream] = useState(null);
 
 
+
+
+
   // function to handle new remote  user joined in room
   const handleUserJoined = useCallback( ({email,id})=>{
     console.log("email",email);
@@ -107,6 +110,7 @@ const Room = () => {
 
     socket.on('peer:nego:final',handleNegoNeedFinal)
 
+
     return ()=>{
       socket.off('user:joined',handleUserJoined)
       socket.off('incoming:call',handleIncomingCall)
@@ -115,7 +119,8 @@ const Room = () => {
       socket.off('peer:nego:final',handleNegoNeedFinal)
 
     }
-  },[socket,handleUserJoined,handleIncomingCall ,handleCallAccepted,handleNegoNeedFinal,handleNegoNeedIncoming]);
+  },[socket, handleUserJoined,handleIncomingCall ,handleCallAccepted,handleNegoNeedFinal,handleNegoNeedIncoming]);
+
 
 
   //function to call user
@@ -134,6 +139,7 @@ const Room = () => {
     setMyStream(stream);
 
   },[remoteSocketId,socket]);
+
   
   return (
     <div>
@@ -167,6 +173,8 @@ const Room = () => {
 
         </>
       }
+
+    
       
     </div>
   )

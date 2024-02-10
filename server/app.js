@@ -24,15 +24,18 @@ io.on('connection',socket=>{
         emailToSocketIdMap.set(email,socket.id);
         socketIdToEmailMap.set(socket.id,email);
 
+        //jo bhi previous joined user hoga ussi k pass y event emit hogaaa eslie jab hum join krenge toh hmari id remoteUserId m save nai hogi because we are the first one to join the room
+        //emit user:joined event only  in  provided room, in which email and id is passed of joined user
+        io.to(room).emit('user:joined',{email,id:socket.id});
+
+
         // current user ko join krwadia room
         socket.join(room);
 
         //after joining the room by current user , send room:join event emittion to current socket/user
         io.to(socket.id).emit('room:join',data);
 
-        //emit user:joined event only  in  provided room, in which email and id is passed of joined user
-        io.to(room).emit('user:joined',{email,id:socket.id});
-
+        
         //on user:call event
         socket.on("user:call",({to,offer})=>{
             //emit 'incoming:call' event to the user which our current user want to call
