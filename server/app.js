@@ -35,6 +35,12 @@ io.on('connection',socket=>{
         //after joining the room by current user , send room:join event emittion to current socket/user
         io.to(socket.id).emit('room:joined',data);
 
+
+        //for messaging
+        socket.on("message", (message)=>{
+            
+            socket.to(room).emit("receive-message",message)
+        });
         
         //on user:call event
         socket.on("user:call",({to,offer})=>{

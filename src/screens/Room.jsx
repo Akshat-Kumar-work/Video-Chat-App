@@ -8,6 +8,12 @@ const Room = () => {
 
   const socket = useSocket();
 
+
+  const [message , setMessage] = useState("");
+  const [receivedMess, setReceivedMess] = useState("");
+
+
+
   const [remoteSocketId , setRemoteSocketId] = useState(null);
   const [myStream , setMyStream] = useState(null);
   const [remoteStream , setRemoteStream] = useState(null);
@@ -144,6 +150,25 @@ const Room = () => {
 
   },[remoteSocketId,socket]);
 
+
+  const handleSubmit = useCallback( (e)=>{
+    e.preventDefault();
+    //emiting or triggering the message event with message data
+    console.log("mess before emitting",message)
+    socket.emit("message",message);
+    setMessage("");
+  },[message]);
+
+
+  useEffect( ()=>{
+  
+    socket.on("receive-message",(message) => {
+      setReceivedMess(message);
+    });
+
+  },[socket])
+
+
   
   return (
     <div>
@@ -176,6 +201,24 @@ const Room = () => {
         <ReactPlayer playing height="100px" width="200px" url={remoteStream}/>
 
         </>
+      }
+
+      {
+        remoteSocketId && 
+
+        <form onSubmit={handleSubmit}>
+        <label htmlFor='message'>"Write Your message"</label>
+        <input value={message} onChange={e=>setMessage(e.target.value)} id="message"  />
+        <button type="submit">Send</button>      
+      </form>
+
+      }
+
+      {
+        receivedMess && 
+        <div>
+          {receivedMess}
+          </div>
       }
 
     
