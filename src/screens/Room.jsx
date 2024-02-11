@@ -13,9 +13,6 @@ const Room = () => {
   const [remoteStream , setRemoteStream] = useState(null);
 
 
-
-
-
   // function to handle new remote  user joined in room
   const handleUserJoined = useCallback( ({email,id})=>{
     console.log("email",email);
@@ -51,6 +48,8 @@ const Room = () => {
 
 
   //send our stream to another peeer
+  //get tracks provide our own tracks which can be audio and video
+  //add track used to add our tracks into  peer connection 
   const sendStream = useCallback( ()=>{
     for(const track of myStream.getTracks()){
       peer.peer.addTrack(track,myStream)
@@ -90,8 +89,10 @@ const Room = () => {
     }
   },[handleNegotiationNeeded])
 
+  //track is an event listener, which is used to listen for the remote user track after the remote user track is added by addTrack() method inside the peer connection
   useEffect(()=>{
-    peer.peer.addEventListener('track',async ev =>{
+    peer.peer.ontrack =  ( (ev) =>{
+      console.log(ev)
       const remoteStream = ev.streams
       //stream is an array, we get 0th element of stream because there are many streams
       setRemoteStream(remoteStream[0]);
