@@ -8,7 +8,7 @@ npm i Socket.io-client in client
 -Integrate socket in server side
 -Integrate socket in client side
 
-# Steps To Create a Simple WEB RTC Application
+# 4 Steps To Create a Simple WEB RTC Application
 1: Create instance of new  RTCpeerConnection object by passing ice Configurations which is turn and stun servers, you can use freeice library also which provide free ice servers
 
 
