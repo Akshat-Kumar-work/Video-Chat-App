@@ -9,10 +9,10 @@ npm i Socket.io-client in client
 -Integrate socket in client side
 
 # Steps To Create a Simple WEB RTC Application
-1:Create instance of new  RTCpeerConnection object by passing ice Configurations which is turn and stun servers, you can use freeice library also which provide free ice servers
+1: Create instance of new  RTCpeerConnection object by passing ice Configurations which is turn and stun servers, you can use freeice library also which provide free ice servers
 
 
-2:To connect with remote user 
+2: To connect with remote user 
 -Create offer by using .createOffer() method alwasy make that function async and use await inside which you are creating offer
 After creating offer save the offer inside localDescription and share it to the remote user through the sockets   
 
@@ -21,7 +21,7 @@ After creating offer save the offer inside localDescription and share it to the 
 -after getting the answer of sent offer from remote user through sockets, save answer as remote Description, and share the stream to remote user
 
 
-3:Sharing Media Stream
+3: Sharing Media Stream
 -First we have to get our Media Stream from navigator like this
 const stream  = await navigator.mediaDevices.getUserMedia({
         audio:true,
@@ -33,14 +33,12 @@ const stream  = await navigator.mediaDevices.getUserMedia({
  const sendStream = useCallback( ()=>{
     for(const track of myStream.getTracks()){
       peer.peer.addTrack(track,myStream)
-      console.log(track)
-      
-    }
-  },[myStream])
+      console.log(track) }
+   },[myStream])
 addTrack will pass or add the tracks to the peer-connections, the ontrack event will occur and our peerConnection will listen that onTrack event and set the stream into remote stream,please read onTrack Event listener bellow for more clarifications
 
 
-4:Add 3 major Event listener inside useEffect having socket as dependencies 
+4: Add 3 major Event listener inside useEffect having socket as dependencies 
 
 -onTrack
 we have to add event listener ontrack,to (receive or get or catch) the audio,video,screen share coming from remote client
