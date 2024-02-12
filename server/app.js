@@ -54,6 +54,10 @@ io.on('connection',socket=>{
             io.to(to).emit('call:accepted',{from:socket.id,ans});
         })
 
+        socket.on("sharingNewIceCandidate",({to,candidate})=>{
+            io.to(to).emit('NewIceCandidateReceived',{from:socket.id,candidate})
+        })
+
         socket.on('peer:nego:needed',({to,offer})=>{
             io.to(to).emit('peer:nego:needed',{from:socket.id,offer});
 

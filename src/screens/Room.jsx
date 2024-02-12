@@ -60,6 +60,7 @@ const Room = () => {
     for(const track of myStream.getTracks()){
       peer.peer.addTrack(track,myStream)
       console.log(track)
+      
     }
   },[myStream])
 
@@ -104,6 +105,16 @@ const Room = () => {
       setRemoteStream(remoteStream[0]);
     })
   },[])
+
+
+  //use effect for ice candidate
+  useEffect( ()=>{
+    
+    peer.peer.onicecandidate = ((e)=>{
+      const candidate = e.candidate
+      socket.emit("sharingNewIceCandidate",{to:remoteSocketId,candidate});
+    })
+  },[socket])
   
 
   //use Effect for socket events
@@ -118,6 +129,12 @@ const Room = () => {
 
     socket.on('peer:nego:final',handleNegoNeedFinal)
 
+    socket.on('NewIceCandidateReceived',({from,candidate})=>{
+      if(candidate){
+        peer.peer.addIceCandidate(candidate);
+      }
+    })
+
 
     return ()=>{
       socket.off('user:joined',handleUserJoined)
@@ -125,7 +142,7 @@ const Room = () => {
       socket.off('call:accepted',handleCallAccepted)
       socket.off('peer:nego:needed',handleNegoNeedIncoming)
       socket.off('peer:nego:final',handleNegoNeedFinal)
-
+      socket.off('NewIceCandidateReceived')
     }
   },[socket, handleUserJoined,handleIncomingCall ,handleCallAccepted,handleNegoNeedFinal,handleNegoNeedIncoming]);
 
