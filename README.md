@@ -1,70 +1,62 @@
-# Getting Started with Create React App
+# WEB RTC
+WebRTC stands for Web Real-Time Communication. It's a technology that allows browsers to establish direct communication between them without needing any additional plugins or software installations. In simple terms, it enables real-time audio, video, and data transfer between web browsers.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# SOCKET
+-Install socket.io library to use socket protocols by 
+npm i socket.io in server
+npm i Socket.io-client in client 
+-Integrate socket in server side
+-Integrate socket in client side
 
-## Available Scripts
+# Steps To Create a Simple WEB RTC Application
+1:Create instance of new  RTCpeerConnection object by passing ice Configurations which is turn and stun servers, you can use freeice library also which provide free ice servers
 
-In the project directory, you can run:
 
-### `npm start`
+2:To connect with remote user 
+-Create offer by using .createOffer() method alwasy make that function async and use await inside which you are creating offer
+After creating offer save the offer inside localDescription and share it to the remote user through the sockets   
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+-In remote user ,Create answer after setting the offer as setRemoteDescription(offer) , by peer.createAnswer(), and set the answer as localDescription of that remote user and share it to the user which had sent the offer
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+-after getting the answer of sent offer from remote user through sockets, save answer as remote Description, and share the stream to remote user
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3:Sharing Media Stream
+-First we have to get our Media Stream from navigator like this
+const stream  = await navigator.mediaDevices.getUserMedia({
+        audio:true,
+        video:true
+      });
+      setMyStream(stream)
 
-### `npm run build`
+-After getting our own stream , we will share it with remote user, getTrack() method will provide the tracks from the stream which can be anything audio video:-
+ const sendStream = useCallback( ()=>{
+    for(const track of myStream.getTracks()){
+      peer.peer.addTrack(track,myStream)
+      console.log(track)
+      
+    }
+  },[myStream])
+addTrack will pass or add the tracks to the peer-connections, the ontrack event will occur and our peerConnection will listen that onTrack event and set the stream into remote stream,please read onTrack Event listener bellow for more clarifications
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4:Add 3 major Event listener inside useEffect having socket as dependencies 
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+-onTrack
+we have to add event listener ontrack,to (receive or get or catch) the audio,video,screen share coming from remote client
+To use that track we have to set the remoteStream state (custom use-state) by this, const remoteStream = event.streams
+setRemoteStream(remoteStream[0])
+Here we had use 0 to access the 0th element to access audio and video , because there can  be many streams 
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+-onicecandidate
+we have to share the candidate which can get from event.candidate, by sockets to remote client
+remote client which is receiving the new ice candidate through sockets event, will add that received ice-candidate through peer.addIceCandidate(Receviedcandidate)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+-onnegotiationneeded
+We have to add on nego needed event listener in which we have to create the offer for remote user again if created earlier by call button, and send it to the remote user through the sockets by emitting events and save the localDescrition(offer)
+On other remote client, we will listen the nego needed and take that offer and set it as setRemoteDescription(offer), after this we will create ans and set it as setLocalDescription(ans) , and share that ans to the previous user which shared the offer, 
+In that previous user,we will set the remotedescription(ans),ans which got from other user from sockets 
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
